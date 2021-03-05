@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.alalgo.mapper.UserMapper" >
+    <resultMap id="userInfo" type="org.alalgo.entity.UserDO" >
+        <id column="userId" property="userId" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="phoneNumber" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createTime" javaType="date" jdbcType="TIMESTAMP" />
+        <result column="updateTime" property="updateTime" javaType="date"  jdbcType="TIMESTAMP" />
+        <result column="enable" property="enable" jdbcType="TINYINT" />
+    </resultMap>
+
+    <select id="getUser" resultType="org.alalgo.entity.UserDO">
+       SELECT * FROM user WHERE 1=1  
+    </select>    
+    <select id="getUserByName" resultMap="userInfo">
+       SELECT * FROM user WHERE 1=1  
+       and username = #{username}
+    </select> 
+       
+    <insert id="insertUserByStatement" statementType="STATEMENT">
+    	insert into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+    	values (${userId},${username},${password},${phoneNumber},${createTime} ,${updateTime},${enable})
+    </insert>         
+    <insert id="insertUserByStatement1" statementType="STATEMENT">
+    	insert into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+    	values (${userId},${username},${password},${phoneNumber},${createTime} ,${updateTime},${enable})
+    </insert>     
+    <insert id="insertUser" >
+    	insert into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+    	values (#{userId},#{username},#{password},#{phoneNumber},#{createTime},#{updateTime},#{enable})
+    </insert>
+    <insert id="insertUsers">
+	    	insert  into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+	    	values 	    
+	    	<foreach collection="list" item="it" separator=",">
+			 (#{it.userId},#{it.username},#{it.password},#{it.phoneNumber},#{it.createTime},#{it.updateTime},#{it.enable})
+		    </foreach>	    
+    </insert>   
+    
+    <insert id="insertOrUpdateUser">
+    	insert into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+    	values 
+    	(#{userId},#{username},#{password},#{phoneNumber},#{createTime},#{updateTime},#{enable})    	
+		ON DUPLICATE KEY UPDATE 
+    	username=values(username),password=values(password),phoneNumber=values(phoneNumber),createTime=values(createTime),updateTime=values(updateTime),enable=values(enable)   
+    </insert> 
+    <insert id="insertOrUpdateUsers">
+    	insert into user (userId,username,password,phoneNumber,createTime,updateTime,enable)
+    	values 
+    	<foreach collection="list" item="it" separator=",">
+		 (#{it.userId},#{it.username},#{it.password},#{it.phoneNumber},#{it.createTime},#{it.updateTime},#{it.enable})
+	    </foreach>	    	
+    	ON DUPLICATE KEY UPDATE  
+    	username=values(username),password=values(password),phoneNumber=values(phoneNumber),createTime=values(createTime),updateTime=values(updateTime),enable=values(enable)   
+    </insert>  
+    
+    <select id="callablequeryuser" statementType="CALLABLE" >
+    	{call query_user(#{username,jdbcType=VARCHAR,mode=IN} , #{count,jdbcType=INTEGER,mode=OUT})}
+    </select>                  
+</mapper>
